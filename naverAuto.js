@@ -10,11 +10,18 @@ async function main(arg) {
 
 	// 인자 체크
 	if (!arg) throw '연검작업용 파라메터가 존재하지 않습니다.';
-	if (!arg.주검색어) throw '주검색어가 올바르게 설정되지 않았습니다.';
-	if (!arg.연관검색어 || !arg.연관검색어.length) throw '연관검색어가 올바르게 설정되지 않았습니다.';
+	if (!arg.주검색어) {
+		argjson = JSON.parse(arg);
+	} else {
+		argjson = arg;
+	}
+	if (!argjson.주검색어) throw '주검색어가 올바르게 설정되지 않았습니다. ' + argjson;
+	if (!argjson.연관검색어 || !argjson.연관검색어.length) throw '연관검색어가 올바르게 설정되지 않았습니다.';
 
-	var 주검색어 = arg.주검색어;		// "시타오 미우"
-	var 대기시간 = arg.대기시간 || 10;	// 10
+	//if (true) throw 'argjson: [' + argjson;
+
+	var 주검색어 = argjson.주검색어;		// "시타오 미우"
+	var 대기시간 = argjson.대기시간 || 10;	// 10
 
 	// jquery 로드
 	await sming.loadScript('https://code.jquery.com/jquery-latest.min.js');
@@ -25,17 +32,17 @@ async function main(arg) {
 		overflowX: 'hidden',
 		display: 'inline-block'
 	});
-	$('body').css({ margin: 0, padding: 0 }).append($container);
+	$('body').css({ margjsonin: 0, padding: 0 }).append($container);
 
 	// 연관검색어 순서 무작위로 섞기
-	shuffle(arg.연관검색어);
+	//shuffle(argjson.연관검색어);
 
 	// 연관검색어 배열 순회
 	var tasks = [];
-	for (var i = 0; i < arg.연관검색어.length; i++) {
+	for (var i = 0; i < argjson.연관검색어.length; i++) {
 
-		var 연관검색어 = arg.연관검색어[i].shift();	// "시타오 미우 농어촌"
-		var 링크후보단어들 = arg.연관검색어[i];		// [ "애칭 붙은 이유는", "시골소녀의 재발견" ]
+		var 연관검색어 = argjson.연관검색어[i].shift();	// "시타오 미우 농어촌"
+		var 링크후보단어들 = argjson.연관검색어[i];		// [ "애칭 붙은 이유는", "시골소녀의 재발견" ]
 		var 카테고리 = undefined;
 
 		if (연관검색어.lastIndexOf('@') != -1) {
@@ -77,7 +84,7 @@ async function do연관검색세트(주검색어, 연관검색어, 카테고리,
 	var winObj = window.open("https://m.naver.com", winName, `width=360,height=640,resizable`);	//,top=${popupTop},left=${popupLeft}`);
 	await sming.waitEvent(winObj, 'load');
 	winObj.moveTo(popupLeft, popupTop);
-	await sming.wait(500);
+	await sming.wait(500*8);
 
 	// 주검색어 검색
 	await do네이버검색(winObj, 주검색어);
@@ -95,13 +102,13 @@ async function do연관검색세트(주검색어, 연관검색어, 카테고리,
 		for (let j = 0; j < 10; j++) {
 			카테고리링크 = $(winObj.document).find('a[role=tab]:contains(' + 카테고리 + ')')[0];
 			if (카테고리링크) break;
-			await 300;
+			await 300*8;
 		}
 
 		if (!카테고리링크) throw '잘못된 카테고리명: ' + 카테고리;
 
 		카테고리링크.click();
-		await sming.wait(1000);
+		await sming.wait(1000*8);
 	}
 
 	var 스샷파일명2 = await sming.saveScreenshot(winName);		// 임시스샷 저장 2
@@ -149,7 +156,7 @@ async function do연관검색세트(주검색어, 연관검색어, 카테고리,
 // 일정시간 대기 후 스샷취합
 async function do스샷취합(taskContext) {
 
-	await sming.wait(2000);	// 페이지 로딩 대기
+	await sming.wait(2000*8);	// 페이지 로딩 대기
 
 	await countDown(taskContext.winObj, taskContext.대기시간);
 
@@ -243,7 +250,7 @@ async function do네이버검색(winObj, 검색어) {
 	if (!검색칸) 검색칸 = $(winObj.document).find('#nx_query')[0];
 	검색칸.click();
 	검색칸.focus();
-	await sming.wait(500);
+	await sming.wait(500*8);
 
 	return new Promise((resolve) => {
 		$(winObj.document).ready(function () {
@@ -273,7 +280,7 @@ async function do네이버검색(winObj, 검색어) {
 					// 검색버튼 클릭
 					var 검색버튼 = $(winObj.document).find('form[name="search"] button[type=submit]')[0];
 					검색버튼.click();
-					setTimeout(resolve, 1000);					
+					setTimeout(resolve, 1000*8);					
 				}
 			}
 
