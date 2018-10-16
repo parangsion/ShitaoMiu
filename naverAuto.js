@@ -1,7 +1,8 @@
+
 // 네이버 연관검색어 자동 수행
 
 // 최초작성: 2018-10-06 by 닥터마시리트
-// 수정: 모니터 최소해상도 1460에 맞춤. 카테고리 대기시간 10초로 늘림 (2018-10-10 by 닥터마시리트)
+// 수정: 2018-10-08 by 닥터마시리트
 // 사용예 1) @JS(https://rawgit.com/Dr-Mashirito/sming/master/naverAuto.js){ "주검색어": "시타오 미우", "연관검색어": [ ["시타오 미우 농어촌"], ["시타오 미우 선발"] ] }
 // 사용예 2) @JS(https://rawgit.com/Dr-Mashirito/sming/master/naverAuto.js){ "주검색어": "시타오 미우", "연관검색어": [ ["시타오 미우 농어촌", "애칭 붙은 이유는", "시골소녀의 재발견"], ["시타오 미우 선발@뉴스", "http://www.getnews.co.kr/news/articleView.html?idxno=92822", "문우상 기자"] ], "대기시간": 12 }
 
@@ -58,21 +59,20 @@ async function main(arg) {
 }
 
 var winCnt = 0;
+var popupTop = 10;
+var popupLeft = 10;
 
 // 연관검색세트 수행 함수
 async function do연관검색세트(주검색어, 연관검색어, 카테고리, 링크후보단어들, 대기시간) {
-
-	var popupTop = 10;
-	var popupLeft = 370 + ((winCnt % 3) * 360);
 
 	winCnt++;
 	var winName = "winNaver_" + winCnt;
 
 	// 네이버창 열기
-	//popupLeft += 360;
-	//if (1920 < (popupLeft + 370)) {
-	//	popupLeft = 370;
-	//}
+	popupLeft += 360;
+	if (1920 < (popupLeft + 370)) {
+		popupLeft = 370;
+	}
 
 	var winObj = window.open("https://m.naver.com", winName, `width=360,height=640,resizable`);	//,top=${popupTop},left=${popupLeft}`);
 	await sming.waitEvent(winObj, 'load');
@@ -91,12 +91,11 @@ async function do연관검색세트(주검색어, 연관검색어, 카테고리,
 		//var 카테고리링크 = $(winObj.document).find('#_sch_tab li > a[role=tab]:contains(' + 카테고리 + ')')[0];
 
 		// 2018.10.08 카테고리 선택불안 수정
-		// 2018.10.10 카테고리 최대 10초까지 기다리도록
 		var 카테고리링크;
-		for (let j = 0; j < 20; j++) {
+		for (let j = 0; j < 10; j++) {
 			카테고리링크 = $(winObj.document).find('a[role=tab]:contains(' + 카테고리 + ')')[0];
 			if (카테고리링크) break;
-			await 500;
+			await 300;
 		}
 
 		if (!카테고리링크) throw '잘못된 카테고리명: ' + 카테고리;
@@ -167,40 +166,23 @@ async function do스샷취합(taskContext) {
 		+ '</div>'
 	);
 
-	// 반투명 div 추가
-	var $stamp = $('<div />').css({
-		position: 'absolute',
-		top: 0,
-		left: 0,
-		width: '100%',
-		height: '100%',
-		display: 'flex',
-		justifyContent: 'center',
-		alignItems: 'center',
-		zIndex: 9
-	}).appendTo($div);
-
-	// 짤시각
-	$('<span />')
-		.css({
-			top: '5px',
-			left: '10px',
-			padding: '5px 15px',
-			position: 'absolute',
-			borderRadius: '5px',
-			backgroundColor: 'white',
-			color: 'black',
-			fontSize: '15px',
-			fontWeight: 'bold',
-			opacity: 0.9
-		})
-		.text(formatDate(new Date()))
-		.appendTo($stamp);
-
-	// 낙관이 있다면 
+	// 낙관이 있다면 반투명 div 추가
 	var stampFile = await sming.getStampImageFileName();
 	if (stampFile) {
-		$stamp.append('<img src="' + stampFile + '" style="opacity:0.8" />')
+		var $stamp = $('<div />').css({
+			position: 'absolute',
+			top: 0,
+			left: 0,
+			width: '100%',
+			height: '100%',
+			display: 'flex',
+			justifyContent: 'center',
+			alignItems: 'center',
+			opacity: 0.5,
+			zIndex: 9
+		});
+		$stamp.append('<img src="' + stampFile + '" />')
+		$stamp.appendTo($div);
 	}
 
 	// 이 div를 화면에 표시
@@ -263,7 +245,7 @@ async function do네이버검색(winObj, 검색어) {
 	검색칸.focus();
 	await sming.wait(500);
 
-	await new Promise((resolve) => {
+	return new Promise((resolve) => {
 		$(winObj.document).ready(function () {
 
 			var arr타이핑 = 검색칸.value.split('').fill(String.fromCharCode(8));
@@ -291,25 +273,13 @@ async function do네이버검색(winObj, 검색어) {
 					// 검색버튼 클릭
 					var 검색버튼 = $(winObj.document).find('form[name="search"] button[type=submit]')[0];
 					검색버튼.click();
-					setTimeout(resolve, 1000);
+					setTimeout(resolve, 1000);					
 				}
 			}
 
 			keyTyping();
 		});
 	});
-
-	// 2018.10.10 검색결과 응답이 올때까지 대기
-	for (var i = 0; i < 20; i++) {
-		var t = $(winObj.document).find('head > title').text();
-		var groups = /(.+) \: 네이버/g.exec(t);
-
-		if (groups.length > 1 && groups[1].trim() === 검색어.trim()) return;
-
-		await sming.wait(500);
-	}
-
-	throw '네이버 검색에 대한 응답시간 초과';
 }
 
 // 무작위 섞기
@@ -321,15 +291,3 @@ function shuffle(array) {
 		}
 	}
 }
-
-// 날짜포멧
-function formatDate(date) {
-	var year = date.getFullYear();
-	var month = date.getMonth() + 1;
-	var day = date.getDate();
-
-	if (day < 10) day = '0' + day;
-	if (month < 10) month = '0' + month;
-
-	return `${year}-${month}-${day}`;
-};
