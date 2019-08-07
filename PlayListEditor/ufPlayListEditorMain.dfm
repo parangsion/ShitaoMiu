@@ -205,13 +205,12 @@ object fPlayListEditorMain: TfPlayListEditorMain
             Left = 10
             Top = 13
             Width = 63
-            Height = 18
+            Height = 16
             Margins.Left = 9
             Margins.Top = 12
             Margins.Bottom = 9
             Align = alLeft
             Caption = #49828#48141#48391' '#54260#45908' '
-            ExplicitHeight = 16
           end
           object edSmingbotDir: TJvDirectoryEdit
             AlignWithMargins = True
@@ -274,13 +273,12 @@ object fPlayListEditorMain: TfPlayListEditorMain
             Left = 10
             Top = 13
             Width = 63
-            Height = 19
+            Height = 16
             Margins.Left = 9
             Margins.Top = 12
             Margins.Bottom = 9
             Align = alLeft
             Caption = #54200#51665#44592' '#54260#45908' '
-            ExplicitHeight = 16
           end
           object edEditorDir: TEdit
             AlignWithMargins = True
@@ -607,13 +605,12 @@ object fPlayListEditorMain: TfPlayListEditorMain
       Left = 7
       Top = 1
       Width = 56
-      Height = 17
+      Height = 16
       Margins.Left = 6
       Margins.Top = 0
       Margins.Bottom = 0
       Align = alLeft
       Caption = 'lblVersion'
-      ExplicitHeight = 16
     end
   end
   object EditCellEditor1: TEditCellEditor

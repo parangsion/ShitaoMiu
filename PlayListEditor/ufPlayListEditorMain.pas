@@ -11,11 +11,12 @@ uses
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
   Vcl.ComCtrls, Vcl.Grids, Vcl.CheckLst, Vcl.Mask, JvExMask,
   JvComponentBase, JvDragDrop, JvExExtCtrls, JvExtComponent, JvToolEdit,
-  JvSplit, JvExStdCtrls, JvListBox, XStringGrid, TFlatSplitterUnit,
+  JvSplit, JvExStdCtrls, JvListBox, JvSpin, CEButton, Vcl.Imaging.pngimage,
+  XStringGrid, TFlatSplitterUnit,
 
   uCommDefines, uCommIniLastData,
 
-  uDefines, JvSpin, CEButton, Vcl.Imaging.pngimage
+  uDefines
 ;
 
 type
@@ -132,7 +133,7 @@ implementation
 
 uses
   StrUtils,
-  uCommDefinesImpl, uCommStrings, uCommSystem
+  uCommDefinesImpl, uCommMath, uCommStrings, uCommSystem
 ;
 
 {$include Version.inc}
