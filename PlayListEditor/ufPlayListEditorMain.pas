@@ -53,6 +53,10 @@ type
     lblVersion: TLabel;
     btnRowInsertAll: TButton;
     imgInsert: TImage;
+    Panel3: TPanel;
+    Label3: TLabel;
+    edMagickDir: TJvDirectoryEdit;
+    btnMergeImage: TButton;
     procedure FormCreate(Sender: TObject);
     procedure btnLoadPlaylistFile_SmingInitClick(Sender: TObject);
     procedure sgListDragOver(Sender, Source: TObject; X, Y: Integer;
@@ -78,6 +82,7 @@ type
       State: TGridDrawState);
     procedure sgListMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure btnMergeImageClick(Sender: TObject);
 
   private
     // CaptureFile listbox
@@ -95,6 +100,9 @@ type
     // StringGrid : Screen <-> Data
     procedure PlayList_ScreenToData(var aPlayList : RPOSTARRAY; incEmptyFilename : Boolean);
     procedure PlayList_DataToScreen(var aPlayList : RPOSTARRAY);
+    // PlayList -> Merge image files
+    procedure PlayList_MergeImages(var aPlayList : RPOSTARRAY);
+
       // nRowNo 에 해당하는 Pos 값을 구한다.  nRowNo : 1 base
     procedure PlayList_DataPosOfRowNo(var aPos : RITERATOR; var aPlayList : RPOSTARRAY; nRowNo : Integer);
       // sFilename 과 Key Match 되는 게시물의 Pos 값을 구한다.  nRowNo : 1 base
@@ -133,7 +141,7 @@ implementation
 
 uses
   StrUtils,
-  uCommDefinesImpl, uCommMath, uCommStrings, uCommSystem
+  uCommDefinesImpl, uCommMath, uCommStrings, uCommSystem, uCommLogger
 ;
 
 {$include Version.inc}
@@ -165,6 +173,7 @@ begin
     SetSectionName(Self);
 
     AddKey(edSmingbotDir,  ExtractFilePath(Application.ExeName));
+    AddKey(edMagickDir,   '');
   end;
 
   isChanged_ := False;
@@ -459,6 +468,19 @@ end;
 
 //------------------------------------------------------------------------------
 //
+procedure TfPlayListEditorMain.btnMergeImageClick(Sender: TObject);
+var
+  aPlayList : RPOSTARRAY;
+begin
+  PlayList_ScreenToData(aPlayList, {incEmptyFilename=}True);
+  PlayList_MergeImages(aPlayList);
+  PlayList_DataToScreen(aPlayList);
+  isChanged_ := True;
+end;
+
+
+//------------------------------------------------------------------------------
+//
 procedure TfPlayListEditorMain.btnRowInsertFirstClick(Sender: TObject);
 var
   idxAffectedRow : Integer;
@@ -473,7 +495,6 @@ end;
 //------------------------------------------------------------------------------
 procedure TfPlayListEditorMain.btnRowInsertAllClick(Sender: TObject);
 var
-  idxC, idxR : Integer;
   aPlayList : RPOSTARRAY;
 begin
   PlayList_ScreenToData(aPlayList, {incEmptyFilename=}True);
@@ -951,6 +972,58 @@ end;
 
 
 //------------------------------------------------------------------------------
+// PlayList -> Merge image files
+procedure TfPlayListEditorMain.PlayList_MergeImages(var aPlayList : RPOSTARRAY);
+var
+  idxPost, idxSong, idxFile, nFileCount : Integer;
+  sCaptureFolder, sBackupFolder, sOutFullFilename, sOutFilename, sFileList, sCmdLine : String;
+begin
+  sCaptureFolder := IncludeTrailingPathDelimiter(edSmingbotDir.Text) + 'Capture\';
+  sBackupFolder  := sCaptureFolder + 'MergeBackup\';
+    CreateFullPath(sBackupFolder, {lastIsFilename=}False);
+
+  for idxPost := LOW(aPlayList.list) to HIGH(aPlayList.list) do begin
+    for idxSong := LOW(aPlayList.list[idxPost].aSongList.list) to HIGH(aPlayList.list[idxPost].aSongList.list) do begin
+
+      nFileCount := Length(aPlayList.list[idxPost].aSongList.list[idxSong].aFileList);
+      if (1 < nFileCount) then begin
+
+        // Merge zzzz
+        sFileList := '';
+        for idxFile := LOW(aPlayList.list[idxPost].aSongList.list[idxSong].aFileList) to HIGH(aPlayList.list[idxPost].aSongList.list[idxSong].aFileList) do begin
+          sFileList := sFileList + '"' + sCaptureFolder + aPlayList.list[idxPost].aSongList.list[idxSong].aFileList[idxFile] + '" ';
+        end;
+
+        sOutFilename := FormatDateTime('YY-MM-DD',Now) + ' ' + aPlayList.list[idxPost].sGallName + '_' + IntToStr(idxSong + 1) + '.png';
+        sOutFullFilename := sCaptureFolder + sOutFilename;
+        if FileExists(sOutFullFilename) then
+          DeleteFile(sOutFullFilename);
+
+        sCmdLine := IncludeTrailingPathDelimiter(edMagickDir.Text) + 'magick.exe ' + sFileList + '-append "' + sOutFullFilename + '"';
+        //LOG.msg(sCmdLine);
+
+        if ExecuteCommand(sCmdLine, {Hidden=}False, {doWait=}True) then begin
+          if FileExists(sOutFullFilename) then begin
+            for idxFile := LOW(aPlayList.list[idxPost].aSongList.list[idxSong].aFileList) to HIGH(aPlayList.list[idxPost].aSongList.list[idxSong].aFileList) do begin
+              MoveFile(  PChar(sCaptureFolder + aPlayList.list[idxPost].aSongList.list[idxSong].aFileList[idxFile]),
+                         PChar(sBackupFolder + aPlayList.list[idxPost].aSongList.list[idxSong].aFileList[idxFile])   );
+            end;
+
+            SetLength(aPlayList.list[idxPost].aSongList.list[idxSong].aFileList, 1);
+            aPlayList.list[idxPost].aSongList.list[idxSong].aFileList[0] := sOutFilename;
+          end;
+        end else begin
+          LOG.msg(
+            LOG.log(logError, 'Commanf error : [%s]', [sCmdLine])
+          );
+        end;
+      end;
+
+    end; // for idxSong
+  end; // for idxPost
+end;
+
+//------------------------------------------------------------------------------
 // nRowNo 에 해당하는 Pos 값을 구한다. nRowNo : 1 base
 procedure  TfPlayListEditorMain.PlayList_DataPosOfRowNo(var aPos : RITERATOR; var aPlayList : RPOSTARRAY; nRowNo : Integer);
 var
@@ -1015,10 +1088,11 @@ begin
         found := (0 < Pos(sSmingKey, sFilenameKey)) or (0 < Pos(sFilenameKey, sSmingKey));
       end;
 
-      // 2. 갤명 비교 : 갤명 4자 이상이어야 하고, SID 값이 숫자(스밍)이면 안된다.
+      // 2. 갤명 비교 : 갤명 C_MIN_GALLNAME_LEN 자 이상이어야 하고, SID 값이 숫자(스밍)이면 안된다.
       if (not found) then begin
-        found := (not IsSmingSID(aPlayList.list[idxPost].aSongList.list[idxSong].sSID)) and
-                 (4 <= Length(aPlayList.list[idxPost].sGallName)) and (0 < Pos(aPlayList.list[idxPost].sGallName, sFilenameKey));
+        found := //(not IsSmingSID(aPlayList.list[idxPost].aSongList.list[idxSong].sSID)) and
+                 (C_MIN_GALLNAME_LEN <= Length(aPlayList.list[idxPost].sGallName)) and
+                 (0 < Pos(aPlayList.list[idxPost].sGallName, sFilenameKey));
       end;
 
       if found then begin

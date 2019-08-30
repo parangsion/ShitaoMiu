@@ -162,16 +162,16 @@ object fPlayListEditorMain: TfPlayListEditorMain
   end
   object pnlGrid: TPanel
     Left = 0
-    Top = 140
+    Top = 45
     Width = 1504
-    Height = 598
+    Height = 693
     Align = alBottom
     TabOrder = 1
     object Panel2: TPanel
       Left = 1
       Top = 1
       Width = 1502
-      Height = 85
+      Height = 125
       Align = alTop
       TabOrder = 0
       object btnRowInsertFirst: TButton
@@ -179,7 +179,7 @@ object fPlayListEditorMain: TfPlayListEditorMain
         Left = 1301
         Top = 4
         Width = 83
-        Height = 77
+        Height = 117
         Align = alRight
         Caption = #52395' '#51460' '#52628#44032
         TabOrder = 0
@@ -189,7 +189,7 @@ object fPlayListEditorMain: TfPlayListEditorMain
         Left = 1
         Top = 1
         Width = 848
-        Height = 83
+        Height = 123
         Align = alLeft
         BevelOuter = bvNone
         TabOrder = 1
@@ -205,12 +205,13 @@ object fPlayListEditorMain: TfPlayListEditorMain
             Left = 10
             Top = 13
             Width = 63
-            Height = 16
+            Height = 18
             Margins.Left = 9
             Margins.Top = 12
             Margins.Bottom = 9
             Align = alLeft
             Caption = #49828#48141#48391' '#54260#45908' '
+            ExplicitHeight = 16
           end
           object edSmingbotDir: TJvDirectoryEdit
             AlignWithMargins = True
@@ -266,19 +267,20 @@ object fPlayListEditorMain: TfPlayListEditorMain
           Top = 41
           Width = 848
           Height = 42
-          Align = alClient
+          Align = alTop
           TabOrder = 1
           object Label2: TLabel
             AlignWithMargins = True
             Left = 10
             Top = 13
             Width = 63
-            Height = 16
+            Height = 19
             Margins.Left = 9
             Margins.Top = 12
             Margins.Bottom = 9
             Align = alLeft
             Caption = #54200#51665#44592' '#54260#45908' '
+            ExplicitHeight = 16
           end
           object edEditorDir: TEdit
             AlignWithMargins = True
@@ -331,13 +333,59 @@ object fPlayListEditorMain: TfPlayListEditorMain
             OnClick = btnSavePlaylistFile_SmingClick
           end
         end
+        object Panel3: TPanel
+          Left = 0
+          Top = 83
+          Width = 848
+          Height = 40
+          Align = alClient
+          TabOrder = 2
+          object Label3: TLabel
+            AlignWithMargins = True
+            Left = 10
+            Top = 13
+            Width = 75
+            Height = 17
+            Margins.Left = 9
+            Margins.Top = 12
+            Margins.Bottom = 9
+            Align = alLeft
+            Caption = 'ImageMagick'
+            ExplicitHeight = 16
+          end
+          object edMagickDir: TJvDirectoryEdit
+            AlignWithMargins = True
+            Left = 91
+            Top = 10
+            Width = 342
+            Height = 20
+            Margins.Top = 9
+            Margins.Bottom = 9
+            Align = alLeft
+            DialogKind = dkWin32
+            TabOrder = 0
+            Text = 'edMagickDir'
+            ExplicitHeight = 24
+          end
+          object btnMergeImage: TButton
+            AlignWithMargins = True
+            Left = 439
+            Top = 4
+            Width = 146
+            Height = 32
+            Align = alLeft
+            Caption = #51060#48120#51648' '#54633#52824#44592
+            TabOrder = 1
+            OnClick = btnMergeImageClick
+          end
+        end
       end
       object mLog: TMemo
         AlignWithMargins = True
         Left = 852
         Top = 4
         Width = 443
-        Height = 77
+        Height = 117
         Align = alClient
         Lines.Strings = (
           'mLog')
@@ -348,7 +396,7 @@ object fPlayListEditorMain: TfPlayListEditorMain
         Left = 1390
         Top = 4
         Width = 108
-        Height = 77
+        Height = 117
         Align = alRight
         Caption = #51204#52404' '#50500#47000' '#51460' '#52628#44032
         TabOrder = 3
@@ -357,16 +405,16 @@ object fPlayListEditorMain: TfPlayListEditorMain
     end
     object Panel9: TPanel
       Left = 1
-      Top = 86
+      Top = 126
       Width = 1502
-      Height = 511
+      Height = 566
       Align = alClient
       TabOrder = 1
       object pnlBodyLeft: TPanel
         Left = 1
         Top = 1
         Width = 288
-        Height = 509
+        Height = 564
         Align = alLeft
         TabOrder = 0
         object lbFileList: TListBox
@@ -374,7 +422,7 @@ object fPlayListEditorMain: TfPlayListEditorMain
           Left = 4
           Top = 45
           Width = 280
-          Height = 460
+          Height = 515
           Align = alClient
           DragMode = dmAutomatic
           MultiSelect = True
@@ -417,7 +465,7 @@ object fPlayListEditorMain: TfPlayListEditorMain
         Left = 289
         Top = 1
         Width = 8
-        Height = 509
+        Height = 564
         ControlFirst = pnlGrid
         ControlSecond = pnlBodyLeft
         Align = alLeft
@@ -428,7 +476,7 @@ object fPlayListEditorMain: TfPlayListEditorMain
         Left = 300
         Top = 4
         Width = 1198
-        Height = 503
+        Height = 558
         Align = alClient
         BorderStyle = bsNone
         ColCount = 8
@@ -605,12 +653,13 @@ object fPlayListEditorMain: TfPlayListEditorMain
       Left = 7
       Top = 1
       Width = 56
-      Height = 16
+      Height = 17
       Margins.Left = 6
       Margins.Top = 0
       Margins.Bottom = 0
       Align = alLeft
       Caption = 'lblVersion'
+      ExplicitHeight = 16
     end
   end
   object EditCellEditor1: TEditCellEditor

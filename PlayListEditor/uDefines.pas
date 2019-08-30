@@ -15,6 +15,8 @@ const
 
   C_CAPTUREFOLDERNAME = 'Capture';
 
+  C_MIN_GALLNAME_LEN  = 2;    // 갤명 2자 이상만 처리
+
 
 const
   C_GRIDCOLIDX_TIME       = 0;
