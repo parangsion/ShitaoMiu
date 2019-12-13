@@ -461,6 +461,8 @@ begin
     //mLog.Lines.Add('Drop:' + IntToStr(idxC) + ',' + IntToStr(idxR) + ':' + StringArrayToString(aSelectedFilenameList));
     //mLog.Lines.Add(' -- ' + IntToStr(aPos.idxPost) + ',' + IntToStr(aPos.idxSong) + ',' + IntToStr(aPos.idxFile));
   end;
+
+  btnSavePlaylistFile_SmingClick(btnSavePlaylistFile_Editor);
 end;
 
 
@@ -475,6 +477,9 @@ begin
   PlayList_ScreenToData(aPlayList, {incEmptyFilename=}True);
   PlayList_MergeImages(aPlayList);
   PlayList_DataToScreen(aPlayList);
+
+  btnSavePlaylistFile_SmingClick(btnSavePlaylistFile_Editor);
+
   isChanged_ := True;
 end;
 
@@ -565,6 +570,8 @@ begin
       PlayList_DataToScreen(aPlayList);
       btnLoadCaptureFileList.Click();
     end;
+
+    btnSavePlaylistFile_SmingClick(btnSavePlaylistFile_Editor);
 
     isChanged_ := True;
 

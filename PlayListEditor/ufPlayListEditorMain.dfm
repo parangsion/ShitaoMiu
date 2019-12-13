@@ -260,6 +260,7 @@ object fPlayListEditorMain: TfPlayListEditorMain
             Caption = #49828#48141#48391' playlist '#51200#51109
             TabOrder = 3
             OnClick = btnSavePlaylistFile_SmingClick
+            ExplicitTop = 6
           end
         end
         object Panel8: TPanel
@@ -331,6 +332,7 @@ object fPlayListEditorMain: TfPlayListEditorMain
             Caption = #54200#51665#44592' playlist '#51200#51109
             TabOrder = 3
             OnClick = btnSavePlaylistFile_SmingClick
+            ExplicitTop = 6
           end
         end
         object Panel3: TPanel
@@ -458,6 +460,7 @@ object fPlayListEditorMain: TfPlayListEditorMain
             Caption = #51088#46041' '#54028#51068' '#50734#44608
             TabOrder = 1
             OnClick = btnAutoSetCaptureFileLiistClick
+            ExplicitTop = 5
           end
         end
       end
